@@ -22,8 +22,8 @@ A Django-based e-commerce platform for selling car tires and disks.
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/shop_project.git
-cd shop_project
+git clone https://github.com/1murs/web_site_120.git
+cd web_site_120
 ```
 
 ### 2. Create virtual environment
@@ -68,8 +68,8 @@ Visit `http://127.0.0.1:8000/` in your browser.
 ## Project Structure
 
 ```
-shop_project/
-├── shop_project/          # Main project settings
+web_site_120/
+├── web_site_120/          # Main project settings
 │   ├── settings.py       # Django settings
 │   ├── urls.py           # URL routing
 │   └── wsgi.py
