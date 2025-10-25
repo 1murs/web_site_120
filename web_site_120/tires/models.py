@@ -25,6 +25,10 @@ class TireQuerySet(models.QuerySet):
         """Filter by price"""
         return self.filter(price__gte=min_price, price__lte=max_price)
 
+    def by_diameter(self, diameter):
+        """Filter by diameter"""
+        return self.filter(diameter=diameter)
+
     def in_stock(self):
         """Only products in stock"""
         return self.filter(quantity__gt=0)

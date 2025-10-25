@@ -10,7 +10,8 @@ class DiskQuerySet(models.QuerySet):
         """Search by brand, model, article"""
         return self.filter(
             models.Q(brand__icontains=query)
-            | models.Q(model__icontains=query | models.Q(article__icontains=query))
+            | models.Q(model__icontains=query)
+            | models.Q(article__icontains=query)
         )
 
     def by_brand(self, brand):

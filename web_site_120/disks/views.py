@@ -46,7 +46,7 @@ def disk_list(request):
     diameters = sorted(all_disks.values_list("diameter", flat=True).distinct())
 
     min_price_db = all_disks.aggregate(models.Min("price"))["price__min"] or 0
-    max_price_db = all_disks.aggregate(models.Min("price"))["price__max"] or 0
+    max_price_db = all_disks.aggregate(models.Max("price"))["price__max"] or 0
 
     context = {
         "page_obj": page_obj,
