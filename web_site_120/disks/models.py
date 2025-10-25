@@ -3,6 +3,53 @@ from django.utils.text import slugify
 from categories.models import Category
 
 
+class DiskQuerySet(models.QuerySet):
+    """Custom method for search Disks"""
+
+    def search(self, query):
+        """Search by brand, model, article"""
+        return self.filter(
+            models.Q(brand__icontains=query)
+            | models.Q(model__icontains=query | models.Q(article__icontains=query))
+        )
+
+    def by_brand(self, brand):
+        """Filter by brand"""
+        return self.filter(brand=brand)
+
+    def by_diameter(self, diameter):
+        """Filter by diameter"""
+        return self.filter(diameter=diameter)
+
+    def by_price_range(self, min_price, max_price):
+        """Filter by price"""
+        return self.filter(price__gte=min_price, price__lte=max_price)
+
+    def in_stock(self):
+        """Only products in stock"""
+        return self.filter(quantity__gt=0)
+
+
+class DiskManager(models.Manager):
+    def get_queryset(self):
+        return DiskQuerySet(self.model, using=self._db)
+
+    def search(self, query):
+        return self.get_queryset().search(query)
+
+    def by_brand(self, brand):
+        return self.get_queryset().by_brand(brand)
+
+    def by_diameter(self, diameter):
+        return self.get_queryset().by_diameter(diameter)
+
+    def by_price_range(self, min_price, max_price):
+        return self.get_queryset().by_price_range(min_price, max_price)
+
+    def in_stock(self):
+        return self.get_queryset().in_stock()
+
+
 class Disk(models.Model):
     # link to category
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -30,6 +77,8 @@ class Disk(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)  # Date
 
     slug = models.SlugField(unique=True, blank=True)
+
+    objects = DiskManager()
 
     def save(self, *args, **kwargs):
         if not self.slug:

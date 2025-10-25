@@ -3,6 +3,56 @@ from django.utils.text import slugify
 from categories.models import Category
 
 
+class TireQuerySet(models.QuerySet):
+    """Custom methods for tire search"""
+
+    def search(self, query):
+        return self.filter(
+            models.Q(brand__icontains=query)
+            | models.Q(model__icontains=query)
+            | models.Q(article__icontains=query)
+        )
+
+    def by_brand(self, brand):
+        """Filter by brand"""
+        return self.filter(brand=brand)
+
+    def by_season(self, season):
+        """Filter by season"""
+        return self.filter(season=season)
+
+    def by_price_range(self, min_price, max_price):
+        """Filter by price"""
+        return self.filter(price__gte=min_price, price__lte=max_price)
+
+    def in_stock(self):
+        """Only products in stock"""
+        return self.filter(quantity__gt=0)
+
+
+class TireManager(models.Manager):
+    def get_queryset(self):
+        return TireQuerySet(self.model, using=self._db)
+
+    def search(self, query):
+        return self.get_queryset().search(query)
+
+    def by_brand(self, brand):
+        return self.get_queryset().by_brand(brand)
+
+    def by_season(self, season):
+        return self.get_queryset().by_season(season)
+
+    def by_diameter(self, diameter):
+        return self.get_queryset().by_diameter(diameter)
+
+    def by_price_range(self, min_price, max_price):
+        return self.get_queryset().by_price_range(min_price, max_price)
+
+    def in_stock(self):
+        return self.get_queryset().in_stock()
+
+
 class Tire(models.Model):
     # Season
     SEASON_CHOICES = [
@@ -47,6 +97,8 @@ class Tire(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)  # Date add
 
     slug = models.SlugField(unique=True, blank=True)
+
+    objects = TireManager()
 
     # https://docs.djangoproject.com/en/5.2/topics/db/models/#overriding-predefined-model-methods
     def save(self, *args, **kwargs):
