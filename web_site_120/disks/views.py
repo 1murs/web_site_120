@@ -60,7 +60,7 @@ def disk_list(request):
         "current_diameter": diameter,
     }
 
-    return render(request, "disk/disk_list.html", context=context)
+    return render(request, "disks/disk_list.html", context=context)
 
 
 def disk_detail(request, slug):
